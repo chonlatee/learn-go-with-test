@@ -104,13 +104,14 @@ func TestWalk(t *testing.T) {
 		aChannel := make(chan Profile)
 
 		go func() {
-			aChannel <- Profile{33, "Berline"}
+			aChannel <- Profile{33, "Berlin"}
 			aChannel <- Profile{34, "Katowice"}
+			close(aChannel)
 		}()
 
 		var got []string
 
-		want := []string{"Berlin", "katowice"}
+		want := []string{"Berlin", "Katowice"}
 		walk(aChannel, func(input string) {
 			got = append(got, input)
 		})
