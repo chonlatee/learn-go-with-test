@@ -10,9 +10,10 @@ import (
 
 func TestServer(t *testing.T) {
 
-	t.Run("normal fetch no cancel", func(t *testing.T) {
+	t.Run("return data from store", func(t *testing.T) {
 		data := "Hello, world"
-		svr := Server(&StubStore{data})
+		store := &SpyStore{response: data}
+		svr := Server(store)
 
 		request := httptest.NewRequest(http.MethodGet, "/", nil)
 		response := httptest.NewRecorder()
@@ -21,6 +22,10 @@ func TestServer(t *testing.T) {
 
 		if response.Body.String() != data {
 			t.Errorf(`got "%s", want "%s"`, response.Body.String(), data)
+		}
+
+		if store.cancelled {
+			t.Error("it should not have cancelled the store")
 		}
 	})
 
@@ -58,15 +63,4 @@ func (s *SpyStore) Fetch() string {
 
 func (s *SpyStore) Cancel() {
 	s.cancelled = true
-}
-
-type StubStore struct {
-	response string
-}
-
-func (s *StubStore) Fetch() string {
-	return s.response
-}
-
-func (s *StubStore) Cancel() {
 }
