@@ -6,7 +6,6 @@ import (
 )
 
 func TestWalk(t *testing.T) {
-
 	cases := []struct {
 		Name          string
 		Input         interface{}
@@ -16,9 +15,24 @@ func TestWalk(t *testing.T) {
 			"Struct with one string field",
 			struct {
 				Name string
+			}{"Chris"},
+			[]string{"Chris"},
+		},
+		{
+			"Struct with two string field",
+			struct {
+				Name string
 				City string
 			}{"Chris", "London"},
 			[]string{"Chris", "London"},
+		},
+		{
+			"Struct with non string field",
+			struct {
+				Name string
+				Age  int
+			}{"Chris", 33},
+			[]string{"Chris"},
 		},
 	}
 
