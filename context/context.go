@@ -1,6 +1,7 @@
 package context
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 )
@@ -8,6 +9,10 @@ import (
 type Store interface {
 	Fetch() string
 	Cancel()
+}
+
+type StoreContext interface {
+	Fetch(ctx context.Context) (string, error)
 }
 
 func Server(store Store) http.HandlerFunc {
@@ -26,5 +31,12 @@ func Server(store Store) http.HandlerFunc {
 		case <-ctx.Done():
 			store.Cancel()
 		}
+	}
+}
+
+func ServerCTX(store StoreContext) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		data, _ := store.Fetch(r.Context())
+		fmt.Fprint(w, data)
 	}
 }
